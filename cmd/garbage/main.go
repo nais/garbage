@@ -20,10 +20,17 @@ func run() error {
 	flag.StringVar(&serviceAccountEmail, "service-account", "", "Service account email")
 	flag.Parse()
 
-	_, err := gcp.ArtifactRegistryClient(ctx, serviceAccountEmail)
+	garClient, err := gcp.ArtifactRegistryClient(ctx, serviceAccountEmail)
 	if err != nil {
 		return err
 	}
+
+	images, err := gcp.ListDockerImages(ctx, garClient, "PARENT")
+	if err != nil {
+		return err
+	}
+
+	_ = images
 
 	return nil
 }

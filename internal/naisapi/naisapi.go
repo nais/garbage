@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/garbage/internal/naisapi/protoapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/nais/garbage/internal/naisapi/protoapi"
 )
 
 type Client struct {
