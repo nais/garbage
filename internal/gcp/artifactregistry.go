@@ -20,9 +20,26 @@ func ArtifactRegistryClient(ctx context.Context, serviceAccountEmail string) (*a
 	return artifactregistry.NewClient(ctx, option.WithTokenSource(ts))
 }
 
-func ListDockerImages(ctx context.Context, garClient *artifactregistry.Client, parent string) ([]*artifactregistrypb.DockerImage, error) {
+func ListRepositories(ctx context.Context, garClient *artifactregistry.Client, id ProjectLocationID) ([]*artifactregistrypb.Repository, error) {
+	results := make([]*artifactregistrypb.Repository, 0)
+	iter := garClient.ListRepositories(ctx, &artifactregistrypb.ListRepositoriesRequest{Parent: id.String()})
+
+	for {
+		x, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		} else if err != nil {
+			return nil, err
+		}
+		results = append(results, x)
+	}
+
+	return results, nil
+}
+
+func ListDockerImages(ctx context.Context, garClient *artifactregistry.Client, repositoryID string) ([]*artifactregistrypb.DockerImage, error) {
 	results := make([]*artifactregistrypb.DockerImage, 0)
-	iter := garClient.ListDockerImages(ctx, &artifactregistrypb.ListDockerImagesRequest{Parent: parent})
+	iter := garClient.ListDockerImages(ctx, &artifactregistrypb.ListDockerImagesRequest{Parent: repositoryID})
 
 	for {
 		x, err := iter.Next()
